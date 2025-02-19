@@ -68,6 +68,9 @@ plusMinus.addEventListener("click", () => {
     display.textContent = parseFloat(display.textContent) * -1;
 });
 
+backspace.addEventListener("click", () => {
+    display.textContent = display.textContent.slice(0, -1);
+});
 
 clear.addEventListener("click", () => {
     clearDisplay();
