@@ -3,40 +3,76 @@ const buttons = Array.from(document.getElementById("buttons").children);
 const clear = document.getElementById("clear");
 const equal = document.getElementById("equal");
 
-let calcStack = [];
-let op = "";
+let numStack = [];
+let opStack = [];
+let wasOperatorLast = false;
 
 buttons.filter((button) => button.classList.contains("number")).map((button) => {
     button.addEventListener("click", () => {
-        const prev = calcStack[calcStack.length - 1];
-        if ( prev === "%" || prev === "/" || prev === "*" || prev === "-" || prev === "+") {
-            display.textContent = "";
-            op = calcStack.pop();
+
+        if ( wasOperatorLast ) {
+            display.textContent = button.textContent;
+            wasOperatorLast = false;
+            return;
         }
+        
         display.textContent += button.textContent;
+        wasOperatorLast = false;
     });
 });
 
 buttons.filter((button) => button.classList.contains("operation")).map((button) => {
     button.addEventListener("click", () => {
-        calcStack.push(display.textContent);
-        calcStack.push(button.textContent);
+        if ( opStack.length > 0 ) {
+            if ( !wasOperatorLast ) {
+                opStack.pop();
+                opStack.push(button.textContent);
+                return;
+            }
+            const right = parseFloat(display.textContent);
+            const left = parseFloat(numStack.pop());
+            const op = opStack.pop();
+            const result = calculate(left, op, right);
+            display.textContent = result;
+            numStack.push(result);
+            opStack.push(button.textContent);
+            return;
+        }
+        opStack.push(button.textContent);
+        wasOperatorLast = true;
+        numStack.push(display.textContent);
     });
 });
 
+dot.addEventListener("click", () => {
+    if ( display.textContent.includes(".") ) {
+        return;
+    }
+    display.textContent += ".";
+});
+
 clear.addEventListener("click", () => {
-    calcStack = [];
-    display.textContent = "";
+    clearDisplay();
 });
 
 equal.addEventListener("click", () => {
-    const right = parseInt(display.textContent);
-    const left = parseInt(calcStack.pop());
+    
+    const right = parseFloat(display.textContent);
+    const left = parseFloat(numStack.pop());
+    const op = opStack.pop();
     const result = calculate(left, op, right);
 
     display.textContent = result;
-    calcStack.push(result);
+    numStack.push(result);
 });
+
+const peekNums = () => {
+    return numStack[numStack.length - 1];
+}
+
+const peekOps = () => {
+    return opStack[opStack.length - 1];
+}
 
 const calculate = (left, op, right) => { 
 
@@ -57,4 +93,12 @@ const calculate = (left, op, right) => {
             return left % right;
     }
 
+}
+
+const clearDisplay = () => {
+    numStack = [];
+    opStack = [];
+    lastInput = "";
+    hasDot = false;
+    display.textContent = "";
 }
