@@ -2,6 +2,8 @@ const display = document.getElementById("display");
 const buttons = Array.from(document.getElementById("buttons").children);
 const clear = document.getElementById("clear");
 const equal = document.getElementById("equal");
+const dot = document.getElementById("dot");
+const plusMinus = document.getElementById("plusMinus");
 
 let numStack = [];
 let opStack = [];
@@ -50,6 +52,11 @@ dot.addEventListener("click", () => {
     }
     display.textContent += ".";
 });
+
+plusMinus.addEventListener("click", () => {
+    display.textContent = parseFloat(display.textContent) * -1;
+});
+
 
 clear.addEventListener("click", () => {
     clearDisplay();
