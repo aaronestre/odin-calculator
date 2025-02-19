@@ -4,6 +4,7 @@ const clear = document.getElementById("clear");
 const equal = document.getElementById("equal");
 const dot = document.getElementById("dot");
 const plusMinus = document.getElementById("plusMinus");
+const backspace = document.getElementById("backspace");
 
 let numStack = [];
 let opStack = [];
@@ -25,8 +26,10 @@ buttons.filter((button) => button.classList.contains("number")).map((button) => 
 
 buttons.filter((button) => button.classList.contains("operation")).map((button) => {
     button.addEventListener("click", () => {
+        
+
         if ( opStack.length > 0 ) {
-            if ( !wasOperatorLast ) {
+            if ( wasOperatorLast ) {
                 opStack.pop();
                 opStack.push(button.textContent);
                 return;
@@ -38,8 +41,16 @@ buttons.filter((button) => button.classList.contains("operation")).map((button) 
             display.textContent = result;
             numStack.push(result);
             opStack.push(button.textContent);
+            wasOperatorLast = true;
             return;
         }
+
+        if ( wasOperatorLast ) {
+            opStack.pop();
+            opStack.push(button.textContent);
+            return;
+        }
+
         opStack.push(button.textContent);
         wasOperatorLast = true;
         numStack.push(display.textContent);
@@ -63,7 +74,6 @@ clear.addEventListener("click", () => {
 });
 
 equal.addEventListener("click", () => {
-    
     const right = parseFloat(display.textContent);
     const left = parseFloat(numStack.pop());
     const op = opStack.pop();
